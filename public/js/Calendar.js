@@ -60,55 +60,49 @@
 
     this.calendarHTML(this.type);
 
-    $('.dr-presets', this.element).click(function() {
-      self.presetToggle();
+    $('.dr-presets', this.element).on('click keyup', function(event) {
+      if((event.type == 'keyup' && event.which == 13) || event.type == 'click') {
+        self.presetToggle();
+      }
     });
 
-    $('.dr-list-item', this.element).click(function() {
-      var start = $('.dr-item-aside', this).data('start');
-      var end = $('.dr-item-aside', this).data('end');
+    $('.dr-list-item', this.element).on('click keyup', function(event) {
+      if((event.type == 'keyup' && event.which == 13) || event.type == 'click') {
+        var start = $('.dr-item-aside', this).data('start');
+        var end = $('.dr-item-aside', this).data('end');
 
-      self.start_date = self.calendarCheckDate(start);
-      self.end_date = self.calendarCheckDate(end);
+        self.start_date = self.calendarCheckDate(start);
+        self.end_date = self.calendarCheckDate(end);
 
-      self.calendarSetDates();
-      self.presetToggle();
-      self.calendarSaveDates();
+        self.calendarSetDates();
+        self.presetToggle();
+        self.calendarSaveDates();
+      }
     });
 
     $('.dr-date', this.element).on({
       'click': function() {
-        self.calendarOpen(this);
-      },
-
-      'keyup': function(event) {
-        if (event.keyCode == 9 && !self.calIsOpen && !self.start_date && !self.end_date)
+        if($(self.selected).hasClass('dr-active')) {
+          self.calendarClose('force');
+        }
+        else {
           self.calendarOpen(this);
+        }
       },
 
       'keydown': function(event) {
         switch (event.keyCode) {
 
-          case 9: // Tab
-            if ($(self.selected).hasClass('dr-date-start')) {
-              event.preventDefault();
-              self.calendarCheckDates();
-              self.calendarSetDates();
-              $('.dr-date-end', self.element).trigger('click');
+          case 13: // Enter
+            event.preventDefault();
+            if(!self.calIsOpen) {
+              self.calendarOpen(this);
             } else {
               self.calendarCheckDates();
               self.calendarSetDates();
               self.calendarSaveDates();
               self.calendarClose('force');
             }
-          break;
-
-          case 13: // Enter
-            event.preventDefault();
-            self.calendarCheckDates();
-            self.calendarSetDates();
-            self.calendarSaveDates();
-            self.calendarClose('force');
           break;
 
           case 27: // ESC
@@ -151,32 +145,36 @@
       }
     });
 
-    $('.dr-month-switcher i', this.element).click(function() {
-      var m = $('.dr-month-switcher span', self.element).data('month');
-      var y = $('.dr-year-switcher span', self.element).data('year');
-      var this_moment = moment([y, m, 1]);
-      var back = this_moment.clone().subtract(1, 'month');
-      var forward = this_moment.clone().add(1, 'month').startOf('day');
+    $('.dr-month-switcher i', this.element).on('click keyup', function(event) {
+      if((event.type == 'keyup' && event.which == 13) || event.type == 'click') {
+        var m = $('.dr-month-switcher span', self.element).data('month');
+        var y = $('.dr-year-switcher span', self.element).data('year');
+        var this_moment = moment([y, m, 1]);
+        var back = this_moment.clone().subtract(1, 'month');
+        var forward = this_moment.clone().add(1, 'month').startOf('day');
 
-      if ($(this).hasClass('dr-left')) {
-        self.calendarOpen(self.selected, back);
-      } else if ($(this).hasClass('dr-right')) {
-        self.calendarOpen(self.selected, forward);
+        if ($(this).hasClass('dr-left')) {
+          self.calendarOpen(self.selected, back);
+        } else if ($(this).hasClass('dr-right')) {
+          self.calendarOpen(self.selected, forward);
+        }
       }
     });
 
-    $('.dr-year-switcher i', this.element).click(function() {
-      var m = $('.dr-month-switcher span', self.element).data('month');
-      var y = $('.dr-year-switcher span', self.element).data('year');
-      var this_moment = moment([y, m, 1]);
-      var back = this_moment.clone().subtract(1, 'year');
-      var forward = this_moment.clone().add(1, 'year').startOf('day');
+    $('.dr-year-switcher i', this.element).on('click keyup', function(event) {
+      if((event.type == 'keyup' && event.which == 13) || event.type == 'click') {
+        var m = $('.dr-month-switcher span', self.element).data('month');
+        var y = $('.dr-year-switcher span', self.element).data('year');
+        var this_moment = moment([y, m, 1]);
+        var back = this_moment.clone().subtract(1, 'year');
+        var forward = this_moment.clone().add(1, 'year').startOf('day');
 
 
-      if ($(this).hasClass('dr-left')) {
-        self.calendarOpen(self.selected, back);
-      } else if ($(this).hasClass('dr-right')) {
-        self.calendarOpen(self.selected, forward);
+        if ($(this).hasClass('dr-left')) {
+          self.calendarOpen(self.selected, back);
+        } else if ($(this).hasClass('dr-right')) {
+          self.calendarOpen(self.selected, forward);
+        }
       }
     });
 
@@ -294,7 +292,7 @@
         item.data('end', endISO);
         item.html(string);
       } else {
-        ul_presets.append('<li class="dr-list-item">'+ d.label +
+        ul_presets.append('<li class="dr-list-item" tabindex="0">'+ d.label +
           '<span class="dr-item-aside" data-start="'+ startISO +'" data-end="'+ endISO +'">'+ string +'</span>'+
         '</li>');
       }
@@ -583,11 +581,13 @@
       });
     }
 
+
     $('.dr-calendar', this.element)
       .css('width', cal_width)
-      .slideDown(200);
+      .slideDown(200)
+      .focus();
     $('.dr-input', this.element).addClass('dr-active');
-    $(selected).addClass('dr-active').focus();
+    $(selected).addClass('dr-active');
     this.element.addClass('dr-active');
 
     this.calIsOpen = true;
@@ -691,7 +691,7 @@
           '<div class="dr-date dr-date-end" contenteditable>'+ moment(this.end_date).format(this.format.input) +'</div>' +
         '</div>' +
 
-        (this.presets ? '<div class="dr-presets">' +
+        (this.presets ? '<div class="dr-presets" tabindex="0">' +
           '<span class="dr-preset-bar"></span>' +
           '<span class="dr-preset-bar"></span>' +
           '<span class="dr-preset-bar"></span>' +
@@ -699,17 +699,17 @@
       '</div>' +
 
       '<div class="dr-selections">' +
-        '<div class="dr-calendar" style="display: none;">' +
+        '<div class="dr-calendar" tabindex="0" style="display: none;">' +
           '<div class="dr-range-switcher">' +
             '<div class="dr-switcher dr-month-switcher">' +
-              '<i class="dr-left"></i>' +
+              '<i class="dr-left" tabindex="0"></i>' +
               '<span>April</span>' +
-              '<i class="dr-right"></i>' +
+              '<i class="dr-right" tabindex="0"></i>' +
             '</div>' +
             '<div class="dr-switcher dr-year-switcher">' +
-              '<i class="dr-left"></i>' +
+              '<i class="dr-left" tabindex="0"></i>' +
               '<span>2015</span>' +
-              '<i class="dr-right"></i>' +
+              '<i class="dr-right" tabindex="0"></i>' +
             '</div>' +
           '</div>' +
           ul_days_of_the_week[0].outerHTML +
@@ -725,17 +725,17 @@
     '</div>' +
 
     '<div class="dr-selections">' +
-      '<div class="dr-calendar" style="display: none;">' +
+      '<div class="dr-calendar" tabindex="0" style="display: none;">' +
         '<div class="dr-range-switcher">' +
           '<div class="dr-switcher dr-month-switcher">' +
-            '<i class="dr-left"></i>' +
+            '<i class="dr-left" tabindex="0"></i>' +
             '<span></span>' +
-            '<i class="dr-right"></i>' +
+            '<i class="dr-right" tabindex="0"></i>' +
           '</div>' +
           '<div class="dr-switcher dr-year-switcher">' +
-            '<i class="dr-left"></i>' +
+            '<i class="dr-left" tabindex="0"></i>' +
             '<span></span>' +
-            '<i class="dr-right"></i>' +
+            '<i class="dr-right" tabindex="0"></i>' +
           '</div>' +
         '</div>' +
         ul_days_of_the_week[0].outerHTML +
