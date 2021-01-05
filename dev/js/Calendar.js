@@ -307,7 +307,7 @@
 
       var startISO = moment(d.start).toISOString();
       var endISO = moment(d.end).toISOString();
-      var string = moment(d.start).format(self.format.preset) +' &ndash; <span class="sr-only">'+ moment(d.end).format(self.format.preset);
+      var string = moment(d.start).format(self.format.preset) +' &ndash; <span class="sr-only">to</span>'+ moment(d.end).format(self.format.preset);
 
       if ($('.dr-preset-list', self.element).length) {
         var item = $('.dr-preset-list .dr-list-item:nth-of-type('+ (i + 1) +') .dr-item-aside', self.element);
