@@ -60,8 +60,17 @@
 
     this.calendarHTML(this.type);
 
+    $('.daterange').attr('aria-live', 'polite');
+
     $('.dr-presets', this.element).click(function() {
       self.presetToggle();
+    });
+
+    $('.dr-presets', this.element).keypress(function(event) {
+      var keycode = event.keyCode || event.which;
+      if(keycode == '13' || keycode == '32') {
+        self.presetToggle();
+      }
     });
 
     $('.dr-list-item', this.element).click(function() {
@@ -74,6 +83,21 @@
       self.calendarSetDates();
       self.presetToggle();
       self.calendarSaveDates();
+    });
+
+    $('.dr-list-item', this.element).keypress(function(event) {
+      var keycode = event.keyCode || event.which;
+      if(keycode == '13' || keycode == '32') {
+        var start = $('.dr-item-aside', this).data('start');
+        var end = $('.dr-item-aside', this).data('end');
+
+        self.start_date = self.calendarCheckDate(start);
+        self.end_date = self.calendarCheckDate(end);
+
+        self.calendarSetDates();
+        self.presetToggle();
+        self.calendarSaveDates();
+      }
     });
 
     $('.dr-date', this.element).on({
@@ -283,7 +307,7 @@
 
       var startISO = moment(d.start).toISOString();
       var endISO = moment(d.end).toISOString();
-      var string = moment(d.start).format(self.format.preset) +' &ndash; '+ moment(d.end).format(self.format.preset);
+      var string = moment(d.start).format(self.format.preset) +' &ndash; <span class="sr-only">'+ moment(d.end).format(self.format.preset);
 
       if ($('.dr-preset-list', self.element).length) {
         var item = $('.dr-preset-list .dr-list-item:nth-of-type('+ (i + 1) +') .dr-item-aside', self.element);
@@ -291,9 +315,9 @@
         item.data('end', endISO);
         item.html(string);
       } else {
-        ul_presets.append('<li class="dr-list-item">'+ d.label +
+        ul_presets.append('<li><div class="dr-list-item" role="button" tabindex="0">'+ d.label +
           '<span class="dr-item-aside" data-start="'+ startISO +'" data-end="'+ endISO +'">'+ string +'</span>'+
-        '</li>');
+        '</div></li>');
       }
     });
 
@@ -688,7 +712,7 @@
           '<div class="dr-date dr-date-end" contenteditable>'+ moment(this.end_date).format(this.format.input) +'</div>' +
         '</div>' +
 
-        (this.presets ? '<div class="dr-presets">' +
+        (this.presets ? '<div class="dr-presets" role="button" tabindex="0" aria-label="Open more options">' +
           '<span class="dr-preset-bar"></span>' +
           '<span class="dr-preset-bar"></span>' +
           '<span class="dr-preset-bar"></span>' +
