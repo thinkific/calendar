@@ -66,9 +66,10 @@
       self.presetToggle();
     });
 
-    $('.dr-presets', this.element).keypress(function(event) {
-      var keycode = event.keyCode || event.which;
-      if(keycode == '13' || keycode == '32') {
+    $('.dr-presets', this.element).keydown(function(e) {
+      let key = e.key,
+          keyCode = e.keyCode;
+      if (key && 'Enter' === key || key && 'Space' === key || keyCode && 13 === keyCode || keyCode && 32 === keyCode) {
         self.presetToggle();
       }
     });
@@ -85,9 +86,10 @@
       self.calendarSaveDates();
     });
 
-    $('.dr-list-item', this.element).keypress(function(event) {
-      var keycode = event.keyCode || event.which;
-      if(keycode == '13' || keycode == '32') {
+    $('.dr-list-item', this.element).keydown(function(e) {
+      let key = e.key,
+          keyCode = e.keyCode;
+      if (key && 'Enter' === key || key && 'Space' === key || keyCode && 13 === keyCode || keyCode && 32 === keyCode) {
         var start = $('.dr-item-aside', this).data('start');
         var end = $('.dr-item-aside', this).data('end');
 
